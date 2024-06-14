@@ -10,8 +10,10 @@ def _preprocess(string, unicode_escape=False):
         string = string.encode().decode('unicode_escape')
     return string
 
+def _loads(string, **json_params):
+    return json.loads(string, **json_params)
 
-def parse_js_object(string, unicode_escape=False, json_params=None):
+def parse_js_object(string, unicode_escape=False, json_params=None, loads=_loads):
     """
     Extracts first JSON object encountered in the input string
 
@@ -71,10 +73,10 @@ def parse_js_object(string, unicode_escape=False, json_params=None):
         json_params = {}
 
     parsed_data = parse(string)
-    return json.loads(parsed_data, **json_params)
+    return loads(parsed_data, **json_params)
 
 
-def parse_js_objects(string, unicode_escape=False, omitempty=False, json_params=None):
+def parse_js_objects(string, unicode_escape=False, omitempty=False, json_params=None, loads=_loads):
     """
     Returns a generator extracting all JSON objects encountered in the input string.
     Can be used to read JSON Lines
@@ -129,7 +131,7 @@ def parse_js_objects(string, unicode_escape=False, omitempty=False, json_params=
         json_params = {}
     for raw_data in parse_objects(string):
         try:
-            data = json.loads(raw_data, **json_params)
+            data = loads(raw_data, **json_params)
         except ValueError:
             continue
         
